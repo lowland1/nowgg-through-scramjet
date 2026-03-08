@@ -5,6 +5,9 @@ import { server as wisp } from '@mercuryworkshop/wisp-js/server';
 import next from 'next';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { createRequire } from 'module';
+
+const require = createRequire(import.meta.url);
 
 const dev = process.env.NODE_ENV !== 'production';
 const port = parseInt(process.env.PORT || '3000', 10);
@@ -33,15 +36,15 @@ app.prepare().then(() => {
   server.use('/_next/static', express.static(join(process.cwd(), '.next/static')));
 
   // Serve scramjet files
-  const scramjetPath = dirname(fileURLToPath(import.meta.resolve('@mercuryworkshop/scramjet/package.json')));
+  const scramjetPath = dirname(require.resolve('@mercuryworkshop/scramjet/package.json'));
   server.use('/scramjet/', express.static(join(scramjetPath, 'dist')));
 
   // Serve bare-mux files
-  const bareMuxPath = dirname(fileURLToPath(import.meta.resolve('@mercuryworkshop/bare-mux/package.json')));
+  const bareMuxPath = dirname(require.resolve('@mercuryworkshop/bare-mux/package.json'));
   server.use('/bare-mux/', express.static(join(bareMuxPath, 'dist')));
 
   // Serve epoxy-transport files
-  const epoxyPath = dirname(fileURLToPath(import.meta.resolve('@mercuryworkshop/epoxy-transport/package.json')));
+  const epoxyPath = dirname(require.resolve('@mercuryworkshop/epoxy-transport/package.json'));
   server.use('/epoxy/', express.static(join(epoxyPath, 'dist')));
 
   server.all('/bare/*', (req, res, next) => {
