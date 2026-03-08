@@ -13,12 +13,24 @@ const app = next({ dev });
 const handle = app.getRequestHandler();
 
 app.prepare().then(() => {
+  console.log('> Next.js app prepared');
   const server = express();
   const httpServer = createServer(server);
   
   const bareServer = createBareServer('/bare/');
 
+  server.use((req, res, next) => {
+    const start = Date.now();
+    res.on('finish', () => {
+      if (req.url?.startsWith('/_next') || res.statusCode >= 400) {
+        console.log(`${req.method} ${req.url} ${res.statusCode} ${Date.now() - start}ms`);
+      }
+    });
+    next();
+  });
+
   server.use(express.static('public'));
+  server.use('/_next/static', express.static(join(process.cwd(), '.next/static')));
 
   // Serve scramjet files
   const scramjetPath = dirname(fileURLToPath(import.meta.resolve('@mercuryworkshop/scramjet/package.json')));
@@ -40,6 +52,10 @@ app.prepare().then(() => {
     }
   });
 
+  server.all('/_next/*', (req, res) => {
+    return handle(req, res);
+  });
+
   server.all('*', (req, res) => {
     return handle(req, res);
   });
@@ -47,10 +63,18 @@ app.prepare().then(() => {
   httpServer.on('upgrade', (req, socket, head) => {
     if (bareServer.shouldRoute(req)) {
       bareServer.routeUpgrade(req, socket, head);
-    } else if (req.url?.startsWith('/wisp/')) {
+    } else if (req.url?.startsWith('/wisp')) {
       wisp.routeRequest(req, socket, head);
     } else {
-      socket.end();
+      // Allow other upgrades (like Next.js HMR if it were enabled)
+      // but for now just handle it gracefully
+      if (dev) {
+        // In dev mode, Next.js might want to upgrade for HMR
+        // We don't want to kill the socket immediately if we don't know what it is
+        // but we also don't have a handler for it other than Next.js
+        // Actually, Next.js handles its own upgrades if we let it, 
+        // but we are using a custom httpServer.
+      }
     }
   });
 

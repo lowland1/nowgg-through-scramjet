@@ -1,20 +1,39 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# NowGG Proxy Launcher
 
-# Run and deploy your AI Studio app
+A high-performance web proxy launcher specifically optimized for `nowgg.fun`, utilizing Scramjet, Bare-Mux, and Epoxy Transport.
 
-This contains everything you need to run your app locally.
+## Build and Development Commands
 
-View your app in AI Studio: https://ai.studio/apps/18d42021-11ab-4639-bad8-450edba1692f
+This project uses a custom Express server to handle Next.js rendering, Bare protocol, and Wisp protocol.
 
-## Run Locally
+### Production Build
+To create an optimized production build:
+```bash
+npm run build
+```
+*Runs `next build` to compile the frontend and prepare server-side components.*
 
-**Prerequisites:**  Node.js
+### Development Mode
+To start the application in development mode:
+```bash
+npm run dev
+```
+*Uses `tsx` to run `server.ts` for real-time development.*
 
+### Production Start
+To run the built application in production:
+```bash
+npm run start
+```
+*Sets `NODE_ENV=production` and starts the custom server.*
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+### Code Quality
+- **Linting:** `npm run lint` (checks for code style and potential errors).
+- **Cleanup:** `npm run clean` (clears the Next.js cache).
+
+## Architecture
+- **Server:** Express + Wisp + Bare Server
+- **Frontend:** Next.js 15+ (App Router)
+- **Proxy Engine:** Scramjet
+- **Transport:** Epoxy (Wisp-based)
+- **Styling:** Tailwind CSS
