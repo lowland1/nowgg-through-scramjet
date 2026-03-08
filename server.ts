@@ -36,16 +36,16 @@ app.prepare().then(() => {
   server.use('/_next/static', express.static(join(process.cwd(), '.next/static')));
 
   // Serve scramjet files
-  const scramjetPath = dirname(require.resolve('@mercuryworkshop/scramjet/package.json'));
-  server.use('/scramjet/', express.static(join(scramjetPath, 'dist')));
+  const scramjetPath = join(dirname(require.resolve('@mercuryworkshop/scramjet')), '..', 'dist');
+  server.use('/scramjet/', express.static(scramjetPath));
 
   // Serve bare-mux files
-  const bareMuxPath = dirname(require.resolve('@mercuryworkshop/bare-mux/package.json'));
-  server.use('/bare-mux/', express.static(join(bareMuxPath, 'dist')));
+  const bareMuxPath = dirname(require.resolve('@mercuryworkshop/bare-mux'));
+  server.use('/bare-mux/', express.static(bareMuxPath));
 
   // Serve epoxy-transport files
-  const epoxyPath = dirname(require.resolve('@mercuryworkshop/epoxy-transport/package.json'));
-  server.use('/epoxy/', express.static(join(epoxyPath, 'dist')));
+  const epoxyPath = dirname(require.resolve('@mercuryworkshop/epoxy-transport'));
+  server.use('/epoxy/', express.static(epoxyPath));
 
   server.all('/bare/*', (req, res, next) => {
     if (bareServer.shouldRoute(req)) {
